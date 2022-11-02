@@ -1,0 +1,97 @@
+---
+import Sponsors from './Sponsors.astro';
+import { removeLeadingSlash, removeTrailingSlash } from '../../util';
+import { getNav, useTranslations } from '../../i18n/util';
+import SidebarContent from './SidebarContent.astro';
+import SidebarToggleTabGroup from '../TabGroup/SidebarToggleTabGroup';
+import CommunityMenu from '../RightSidebar/CommunityMenu.astro';
+import ThemeToggleButton from '../Header/ThemeToggleButton';
+
+export interface Props {
+	currentPage: string;
+}
+
+const t = useTranslations(Astro);
+
+const { currentPage } = Astro.props as Props;
+const currentPageMatch = removeLeadingSlash(removeTrailingSlash(currentPage));
+
+// Group nav menu by sections to properly render.
+const sidebarSections = (await getNav(Astro)).reduce((collection, item) => {
+	if ('header' in item) {
+		collection.push({ ...item, children: [] });
+	} else {
+		collection[collection.length - 1].children.push(item);
+	}
+	return collection;
+}, [] as Parameters<typeof SidebarContent>[0]['sidebarSections']);
+
+const navSections = sidebarSections.filter((section) => section.type === 'navigation');
+let activeTab = 'navigation';
+// for (const section of sidebarSections) {
+// 	if (section.children.some((item) => currentPageMatch.includes(item.slug))) {
+// 		activeTab = section.type;
+// 	}
+// }
+---
+
+<nav aria-label={t('leftSidebar.a11yTitle')}>
+	<SidebarToggleTabGroup
+		client:load
+		defaultActiveTab={activeTab}
+		labels={{ navigation: t('leftSidebar.navigation')}}
+	/>
+	<ul class={`nav-groups`}>
+		<SidebarContent
+			type={'navigation'}
+			defaultActiveTab={activeTab}
+			sidebarSections={navSections}
+			{currentPageMatch}
+		/>
+		<li>
+			<CommunityMenu hideOnLargerScreens={true} />
+		</li>
+		<li style="text-align: center;">
+			<ThemeToggleButton
+				client:visible
+				labels={{ useLight: t('themeToggle.useLight'), useDark: t('themeToggle.useDark') }}
+			/>
+		</li>
+	</ul>
+</nav>
+
+<script>
+	window.addEventListener('DOMContentLoaded', () => {
+		var target = document.querySelector('[data-current-parent="true"]');
+		target?.scrollIntoView({ block: 'center' });
+	});
+</script>
+
+<style>
+	nav {
+		width: 100%;
+		height: 100%;
+		font-size: var(--theme-text-sm);
+	}
+	.nav-groups {
+		padding-top: 1rem;
+		max-height: 100%;
+		overflow-x: visible;
+		overflow-y: auto;
+	}
+
+	@media (min-width: 50em) {
+		.nav-groups {
+			position: fixed;
+			top: calc(var(--theme-navbar-height) + 3rem);
+			bottom: 0;
+			width: calc(var(--theme-left-sidebar-width) - var(--min-spacing-inline) * 1.6);
+		}
+	}
+
+	@media not screen and (min-width: 50em) {
+		nav :global(.TabGroup) {
+			display: none;
+		}
+	}
+</style>

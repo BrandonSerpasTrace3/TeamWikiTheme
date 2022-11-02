@@ -1,0 +1,25 @@
+---
+import UIString from '../UIString.astro';
+import { getLanguageFromURL } from '../../util';
+import EditButton from './EditButton.astro';
+import ContributeButton from './ContributeButton.astro';
+
+export interface Props {
+	i18nReady: boolean | undefined;
+	editHref: string;
+}
+
+const { i18nReady, editHref } = Astro.props as Props;
+
+const lang = getLanguageFromURL(Astro.url.pathname);
+const isFallback = !!Astro.params.fallback;
+const isTranslatable = (lang === 'en' || isFallback) && i18nReady;
+---
+
+<h2 class="heading">Edit</h2>
+<ul>
+	<li class={`header-link depth-2`}>
+		<EditButton editHref={editHref} />
+		<ContributeButton editHref="/"/>
+	</li>
+</ul>

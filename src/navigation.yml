@@ -1,0 +1,26 @@
+Onboarding:
+  - title: Home
+    link: onboarding/home
+  - title: New Member
+    link: onboarding/new-member
+  - title: Team Responsibilities
+    link: onboarding/team-responsibilities
+  - title: Training
+    link: onboarding/training
+  - title: More
+    link: onboarding/training
+    
+
+CI/CD:
+  - title: Home
+    link: cicd/home
+  - title: Survey
+    link: cicd/survey
+  - title: Guardrails
+    link: cicd/guardrails
+
+Snyk:
+  - title: Home
+    link: snyk/home
+  - title: Snyk Broker
+    link: snyk/snyk-broker
